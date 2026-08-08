@@ -1,0 +1,6 @@
+{
+  "name": "Petualangan Pak GuruAI",
+  "description": "Game RPG edukasi pixel art 'Petualangan Pak GuruAI' dengan Mode Siswa, Mode Guru (password: bajuri39), kuis per lokasi level, integrasi Google Sheets (code.gs), dan AI Question Generator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
