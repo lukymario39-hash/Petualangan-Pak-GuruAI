@@ -92,7 +92,7 @@ export const TeacherAuthModal: React.FC<TeacherAuthModalProps> = ({
               <div className="mt-2 text-xs bg-amber-950/80 border border-amber-600/60 text-amber-200 p-2.5 rounded-lg flex items-start gap-2">
                 <KeyRound className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Petunjuk:</strong> Password resmi guru adalah <code className="bg-slate-900 px-1.5 py-0.5 rounded text-amber-300 font-bold border border-amber-600/40">bajuri39</code>
+                  <strong>Petunjuk Mode Guru:</strong> Password ini hanya dimiliki oleh Guru Pengampu. Silakan hubungi Administrator Sekolah atau Pak Guru jika memerlukan akses.
                 </span>
               </div>
             )}

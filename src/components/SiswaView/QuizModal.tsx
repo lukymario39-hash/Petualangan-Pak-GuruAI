@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LocationLevel, Question, StudentProfile } from '../../types';
 import { soundFx } from '../../utils/soundEffects';
-import { CheckCircle2, XCircle, Lightbulb, Trophy, ArrowRight, ShieldAlert, Sparkles, Award } from 'lucide-react';
+import { CheckCircle2, XCircle, Lightbulb, Trophy, ArrowRight, ShieldAlert, Sparkles, Award, X, AlertTriangle, LogOut } from 'lucide-react';
 
 interface QuizModalProps {
   isOpen: boolean;
@@ -28,6 +28,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({
   const [totalExpGained, setTotalExpGained] = useState(0);
   const [totalGoldGained, setTotalGoldGained] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   if (!isOpen || !location) return null;
 
@@ -37,6 +38,34 @@ export const QuizModal: React.FC<QuizModalProps> = ({
     if (isAnswered) return;
     soundFx.playClick();
     setSelectedOption(idx);
+  };
+
+  const handleAttemptExit = () => {
+    soundFx.playClick();
+    if (quizCompleted) {
+      handleFinishQuizModal();
+    } else {
+      setShowExitConfirm(true);
+    }
+  };
+
+  const handleConfirmExit = () => {
+    soundFx.playClick();
+    setShowExitConfirm(false);
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setShowHint(false);
+    setCorrectCount(0);
+    setTotalExpGained(0);
+    setTotalGoldGained(0);
+    setQuizCompleted(false);
+    onClose();
+  };
+
+  const handleCancelExit = () => {
+    soundFx.playClick();
+    setShowExitConfirm(false);
   };
 
   const handleSubmitAnswer = () => {
@@ -118,11 +147,22 @@ export const QuizModal: React.FC<QuizModalProps> = ({
             </div>
           </div>
           
-          <div className="text-right hidden sm:block">
-            <div className="text-xs text-amber-200 font-bold">Soal Pak GuruAI</div>
-            <div className="text-sm font-mono font-extrabold text-amber-400">
-              {quizCompleted ? 'SELESAI' : `${currentIndex + 1} / ${questions.length}`}
+          <div className="flex items-center gap-2">
+            <div className="text-right hidden sm:block">
+              <div className="text-xs text-amber-200 font-bold">Soal Pak GuruAI</div>
+              <div className="text-sm font-mono font-extrabold text-amber-400">
+                {quizCompleted ? 'SELESAI' : `${currentIndex + 1} / ${questions.length}`}
+              </div>
             </div>
+            
+            <button
+              onClick={handleAttemptExit}
+              className="p-1.5 sm:p-2 bg-slate-950/80 hover:bg-red-950 border border-amber-400/80 hover:border-red-500 text-slate-300 hover:text-red-300 rounded-xl transition cursor-pointer flex items-center gap-1 shadow shrink-0"
+              title="Keluar dari Kuis Level"
+            >
+              <X className="w-5 h-5 text-red-400" />
+              <span className="text-xs font-bold text-red-300 hidden sm:inline">Keluar</span>
+            </button>
           </div>
         </div>
 
@@ -302,6 +342,46 @@ export const QuizModal: React.FC<QuizModalProps> = ({
               >
                 LANJUTKAN PETUALANGAN KE LOKASI BARU 🚀
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Exit Confirmation Dialog Modal */}
+        {showExitConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+            <div className="bg-slate-900 border-2 border-red-500 rounded-2xl max-w-md w-full p-6 text-slate-100 shadow-2xl relative space-y-4 text-center font-sans">
+              <div className="w-14 h-14 bg-red-950 border-2 border-red-500 rounded-full flex items-center justify-center mx-auto text-red-400 shadow-inner">
+                <AlertTriangle className="w-7 h-7 animate-bounce" />
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-lg font-extrabold text-red-300 font-mono uppercase">
+                  PERINGATAN KELUAR KUIS!
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Apakah kamu yakin ingin keluar dari kuis level ini? <strong>Seluruh progres jawaban dan poin kuis kamu akan hilang</strong> dan tidak tersimpan!
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-3 rounded-xl border border-red-900/50 text-xs text-amber-300 font-mono">
+                💡 Kamu sedang menjawab Soal #{currentIndex + 1} dari {questions.length}
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  onClick={handleCancelExit}
+                  className="flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-600 transition cursor-pointer shadow"
+                >
+                  Kembali Kuis
+                </button>
+                <button
+                  onClick={handleConfirmExit}
+                  className="flex-1 py-2.5 px-4 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-white rounded-xl text-xs font-extrabold border border-red-400 transition cursor-pointer shadow flex items-center justify-center gap-1.5"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Ya, Keluar Kuis</span>
+                </button>
+              </div>
             </div>
           </div>
         )}

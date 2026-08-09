@@ -38,10 +38,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const currentLoc = locations.find((l) => l.id === student.currentLocationId) || locations[0];
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-2 sm:p-4 font-pixelify select-none">
+    <div className="w-full max-w-[1750px] mx-auto px-2 sm:px-6 py-3 font-pixelify select-none">
       
       {/* Outer Retro Pixel Frame Container */}
-      <div className="bg-slate-950 border-4 border-amber-800 rounded-2xl shadow-[0_0_35px_rgba(217,119,6,0.25)] overflow-hidden relative text-slate-100 flex flex-col min-h-[680px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+      <div className="bg-slate-950 border-4 border-amber-800 rounded-2xl shadow-[0_0_40px_rgba(217,119,6,0.3)] overflow-hidden relative text-slate-100 flex flex-col min-h-[760px] lg:min-h-[820px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         
         {/* Top Header Section */}
         <div className="p-3 sm:p-4 bg-slate-950/95 border-b-2 border-amber-800 flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
@@ -301,7 +301,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                 >
                   <span className="flex items-center gap-2 font-silkscreen uppercase text-[11px]">
                     <Laptop className="w-4 h-4 text-amber-300" />
-                    Mode Guru (bajuri39)
+                    Mode Guru (Terproteksi 🔒)
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
                 </button>
@@ -321,30 +321,81 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           </div>
 
           {/* Right Column (9 cols): EXPANDED WIDE RPG PLAYGROUND CANVAS MAP */}
-          <div className="lg:col-span-9 bg-slate-900 border-4 border-amber-700/80 rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between min-h-[480px] sm:min-h-[520px] shadow-2xl bg-gradient-to-b from-amber-950/30 via-emerald-950/30 to-slate-950">
+          <div className="lg:col-span-9 bg-slate-900 border-4 border-amber-700/80 rounded-2xl p-4 sm:p-6 relative overflow-hidden flex flex-col justify-between min-h-[580px] sm:min-h-[640px] lg:min-h-[720px] shadow-2xl bg-gradient-to-b from-amber-950/30 via-emerald-950/30 to-slate-950">
             
             {/* Pixel Grid Pattern */}
             <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px]" />
 
-            {/* Connecting Path SVG Lines between all 6 level pins */}
+            {/* Animated Connecting Road Lines between all 6 level pins */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
               <defs>
-                <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0.9" />
+                <linearGradient id="roadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#f59e0b" />
+                  <stop offset="25%" stopColor="#10b981" />
+                  <stop offset="50%" stopColor="#06b6d4" />
+                  <stop offset="75%" stopColor="#a855f7" />
+                  <stop offset="100%" stopColor="#ef4444" />
                 </linearGradient>
+
+                <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
 
-              {/* Draw connected polyline between all 6 level pins */}
+              {/* Outer Wide Road Glow Track */}
               <polyline
                 points={sortedLocations.map(l => `${l.mapX}%,${l.mapY}%`).join(' ')}
                 fill="none"
-                stroke="url(#pathGradient)"
-                strokeWidth="4"
-                strokeDasharray="8 6"
-                className="animate-pulse"
+                stroke="#78350f"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.7"
               />
+
+              {/* Inner Dark Road Base */}
+              <polyline
+                points={sortedLocations.map(l => `${l.mapX}%,${l.mapY}%`).join(' ')}
+                fill="none"
+                stroke="#0f172a"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              {/* Animated Glowing Dashed Road Trail */}
+              <polyline
+                points={sortedLocations.map(l => `${l.mapX}%,${l.mapY}%`).join(' ')}
+                fill="none"
+                stroke="url(#roadGradient)"
+                strokeWidth="4"
+                strokeDasharray="10 8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="animate-dash-road"
+              />
+
+              {/* Glowing Waypoint Node Rings at each level coordinate */}
+              {sortedLocations.map((loc) => (
+                <g key={`waypoint-${loc.id}`}>
+                  <circle
+                    cx={`${loc.mapX}%`}
+                    cy={`${loc.mapY}%`}
+                    r="10"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="2"
+                    className="animate-ping opacity-40"
+                  />
+                  <circle
+                    cx={`${loc.mapX}%`}
+                    cy={`${loc.mapY}%`}
+                    r="5"
+                    fill="#fbbf24"
+                  />
+                </g>
+              ))}
             </svg>
 
             {/* Interactive Location Pins Overlay */}

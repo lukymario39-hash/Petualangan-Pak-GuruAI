@@ -73,6 +73,20 @@ export interface Quest {
   rewardGold: number;
 }
 
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: 'soal' | 'level' | 'peta' | 'koin' | 'khusus';
+  currentValue: number;
+  targetValue: number;
+  isUnlocked: boolean;
+  rewardExp: number;
+  rewardGold: number;
+  unlockedAt?: string;
+}
+
 export interface StudentProfile {
   id: string;
   name: string;

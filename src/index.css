@@ -88,6 +88,12 @@
   }
 }
 
+@keyframes dashRoad {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
 .animate-pixel-float {
   animation: pixelFloat 3s ease-in-out infinite;
 }
@@ -102,4 +108,8 @@
 
 .animate-shadow-pulse {
   animation: shadowPulse 3s ease-in-out infinite;
+}
+
+.animate-dash-road {
+  animation: dashRoad 1.2s linear infinite;
 }

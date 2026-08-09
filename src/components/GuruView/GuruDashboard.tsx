@@ -49,8 +49,8 @@ export const GuruDashboard: React.FC<GuruDashboardProps> = ({
                 <h2 className="text-xl sm:text-2xl font-extrabold text-amber-300 font-mono tracking-wide">
                   PANEL KONTROL GURU (MODE GURU)
                 </h2>
-                <span className="text-[10px] bg-purple-950 text-purple-300 border border-purple-500/80 px-2 py-0.5 rounded font-mono font-bold">
-                  PW: bajuri39
+                <span className="text-[10px] bg-purple-950 text-purple-300 border border-purple-500/80 px-2 py-0.5 rounded font-mono font-bold flex items-center gap-1">
+                  Akses Terotentikasi 🔒
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
