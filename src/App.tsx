@@ -18,6 +18,7 @@ import { QuizModal } from './components/SiswaView/QuizModal';
 import { StudentSetupModal } from './components/SiswaView/StudentSetupModal';
 import { InventoryModal } from './components/SiswaView/InventoryModal';
 import { LeaderboardModal } from './components/SiswaView/LeaderboardModal';
+import { StudentProgressModal } from './components/SiswaView/StudentProgressModal';
 
 import { GuruDashboard } from './components/GuruView/GuruDashboard';
 
@@ -76,6 +77,7 @@ export default function App() {
   const [isStudentSetupOpen, setIsStudentSetupOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [selectedQuizLocation, setSelectedQuizLocation] = useState<LocationLevel | null>(null);
 
   // Save to localStorage upon state changes
@@ -167,7 +169,7 @@ export default function App() {
       };
     });
 
-    // Record Submission to Google Sheets Database
+    // Record Submission to Google Sheets Database & Local Storage History
     const submissionPayload: StudentSubmission = {
       studentName: student.name,
       classGrade: student.classGrade,
@@ -178,6 +180,19 @@ export default function App() {
       totalQuestions,
       timestamp: new Date().toLocaleString('id-ID'),
     };
+
+    // Local History Save for Recharts Charts
+    const localHistory = localStorage.getItem('pakguruai_progress_history');
+    let historyArr: StudentSubmission[] = [];
+    if (localHistory) {
+      try {
+        historyArr = JSON.parse(localHistory);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    historyArr.unshift(submissionPayload);
+    localStorage.setItem('pakguruai_progress_history', JSON.stringify(historyArr.slice(0, 50)));
 
     await submitScoreToDatabase(dbConfig, submissionPayload);
   };
@@ -242,6 +257,7 @@ export default function App() {
             onSelectLocation={handleSelectLocation}
             onOpenInventory={() => setIsInventoryOpen(true)}
             onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+            onOpenProgressModal={() => setIsProgressOpen(true)}
             onOpenStudentSetup={() => setIsStudentSetupOpen(true)}
             onOpenDbModal={() => setIsDbModalOpen(true)}
             onOpenTeacherAuth={() => setIsTeacherAuthOpen(true)}
@@ -304,6 +320,13 @@ export default function App() {
         isOpen={isLeaderboardOpen}
         dbConfig={dbConfig}
         onClose={() => setIsLeaderboardOpen(false)}
+      />
+
+      <StudentProgressModal
+        isOpen={isProgressOpen}
+        onClose={() => setIsProgressOpen(false)}
+        student={student}
+        dbConfig={dbConfig}
       />
 
       {selectedQuizLocation && (

@@ -3,7 +3,7 @@ import { LocationLevel, StudentProfile, Question } from '../../types';
 import { soundFx } from '../../utils/soundEffects';
 import { 
   ShieldAlert, BookOpen, Laptop, Backpack, Award, Settings, Save, LogOut, 
-  Sparkles, MapPin, Map as MapIcon, ChevronRight, MessageSquare, Compass, Scroll, Lock, CheckCircle2, Star
+  Sparkles, MapPin, Map as MapIcon, ChevronRight, MessageSquare, Compass, Scroll, Lock, CheckCircle2, Star, TrendingUp
 } from 'lucide-react';
 
 interface GameCanvasProps {
@@ -13,6 +13,7 @@ interface GameCanvasProps {
   onSelectLocation: (loc: LocationLevel) => void;
   onOpenInventory: () => void;
   onOpenLeaderboard: () => void;
+  onOpenProgressModal: () => void;
   onOpenStudentSetup: () => void;
   onOpenDbModal: () => void;
   onOpenTeacherAuth: () => void;
@@ -25,6 +26,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onSelectLocation,
   onOpenInventory,
   onOpenLeaderboard,
+  onOpenProgressModal,
   onOpenStudentSetup,
   onOpenDbModal,
   onOpenTeacherAuth,
@@ -258,6 +260,20 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                   <span className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-emerald-400" />
                     Peringkat Siswa
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    soundFx.playClick();
+                    onOpenProgressModal();
+                  }}
+                  className="w-full text-left p-2 rounded-xl bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-cyan-400" />
+                    Grafik Progres (Recharts)
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                 </button>

@@ -104,6 +104,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_desailmu_1',
     locationId: 'desailmu',
+    classGrade: 'Kelas 5 SD',
     question: 'Berapakah hasil dari 15 + 27 ÷ 3?',
     options: ['14', '24', '19', '32'],
     correctAnswer: 1, // 27/3 = 9; 15+9 = 24
@@ -115,6 +116,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_desailmu_2',
     locationId: 'desailmu',
+    classGrade: 'Kelas 5 SD',
     question: 'Proses pembuangan zat sisa metabolisme dari dalam tubuh manusia disebut...',
     options: ['Respirasi', 'Ekskresi', 'Pencernaan', 'Sirkulasi'],
     correctAnswer: 1,
@@ -126,6 +128,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_desailmu_3',
     locationId: 'desailmu',
+    classGrade: 'Kelas 5 SD',
     question: 'Teks yang berisi petunjuk pembuatan atau penggunaan sesuatu secara berurutan disebut teks...',
     options: ['Eksplanasi', 'Prosedur', 'Deskripsi', 'Narasi'],
     correctAnswer: 1,
@@ -139,6 +142,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_hutankreativitas_1',
     locationId: 'hutankreativitas',
+    classGrade: 'Kelas 7 SMP',
     question: 'Organel sel yang berfungsi sebagai tempat terjadinya respirasi sel untuk menghasilkan energi (ATP) adalah...',
     options: ['Ribosom', 'Lisosom', 'Mitokondria', 'Badan Golgi'],
     correctAnswer: 2,
@@ -150,6 +154,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_hutankreativitas_2',
     locationId: 'hutankreativitas',
+    classGrade: 'Kelas 7 SMP',
     question: 'Manakah di antara kalimat berikut yang memuat majas hiperbola?',
     options: [
       'Angin malam berbisik lembut di telingaku.',
@@ -168,6 +173,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_pelabuhan_1',
     locationId: 'pelabuhanpengalaman',
+    classGrade: 'Kelas 8 SMP',
     question: 'Sebuah mobil bergerak dengan kecepatan konstan 72 km/jam. Kecepatan ini setara dengan...',
     options: ['15 m/s', '20 m/s', '25 m/s', '30 m/s'],
     correctAnswer: 1, // 72 * (1000/3600) = 20 m/s
@@ -181,6 +187,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_akademi_1',
     locationId: 'akademimain',
+    classGrade: 'Kelas 10 SMA',
     question: 'Unsur kimia dengan nomor atom 6 yang menjadi dasar seluruh kehidupan organik di bumi adalah...',
     options: ['Oksigen (O)', 'Hidrogen (H)', 'Karbon (C)', 'Nitrogen (N)'],
     correctAnswer: 2,
@@ -194,6 +201,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_gunung_1',
     locationId: 'gunungpengetahuan',
+    classGrade: 'Kelas 10 SMA',
     question: 'Konsep Hukum II Newton secara matematis dirumuskan sebagai...',
     options: ['F = m × a', 'F = m / a', 'E = m × c²', 'P = F × v'],
     correctAnswer: 0,
@@ -207,6 +215,7 @@ export const INITIAL_QUESTIONS: Question[] = [
   {
     id: 'q_menaramalas_1',
     locationId: 'menaramalas',
+    classGrade: 'Semua Kelas',
     question: 'Pemberantas utama dari Rasa Malas dan Kebodohan di dunia pendidikan adalah...',
     options: ['Penundaan waktu', 'Semangat Belajar & Konsistensi', 'Hanya bermain game', 'Menyerah pada kesulitan'],
     correctAnswer: 1,

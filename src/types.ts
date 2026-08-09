@@ -20,6 +20,7 @@ export interface LocationLevel {
 export interface Question {
   id: string;
   locationId: string;
+  classGrade?: string; // Optional class grade filter e.g., "Kelas 5 SD", "Kelas 7 SMP", "Semua Kelas"
   question: string;
   options: string[];
   correctAnswer: number; // 0-3 index
@@ -27,6 +28,19 @@ export interface Question {
   hint: string;
   expReward: number;
   goldReward: number;
+}
+
+export interface ProgressRecord {
+  id: string;
+  timestamp: string;
+  dateStr: string;
+  score: number;
+  level: number;
+  correctCount: number;
+  totalQuestions: number;
+  locationName: string;
+  classGrade: string;
+  studentName: string;
 }
 
 export interface InventoryItem {

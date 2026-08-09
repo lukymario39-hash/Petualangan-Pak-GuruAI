@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LocationLevel, Question } from '../../types';
 import { soundFx } from '../../utils/soundEffects';
-import { Plus, Trash2, Edit2, CheckCircle2, Save, X, HelpCircle, BookOpen } from 'lucide-react';
+import { Plus, Trash2, Edit2, CheckCircle2, Save, X, HelpCircle, BookOpen, Filter, Download, Upload } from 'lucide-react';
 
 interface QuestionManagerProps {
   locations: LocationLevel[];
@@ -11,6 +11,22 @@ interface QuestionManagerProps {
   onDeleteQuestion: (id: string) => void;
 }
 
+const CLASS_GRADE_OPTIONS = [
+  'Semua Kelas',
+  'Kelas 1 SD',
+  'Kelas 2 SD',
+  'Kelas 3 SD',
+  'Kelas 4 SD',
+  'Kelas 5 SD',
+  'Kelas 6 SD',
+  'Kelas 7 SMP',
+  'Kelas 8 SMP',
+  'Kelas 9 SMP',
+  'Kelas 10 SMA',
+  'Kelas 11 SMA',
+  'Kelas 12 SMA',
+];
+
 export const QuestionManager: React.FC<QuestionManagerProps> = ({
   locations,
   questions,
@@ -19,10 +35,12 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
   onDeleteQuestion,
 }) => {
   const [selectedLocationId, setSelectedLocationId] = useState<string>(locations[0]?.id || 'desailmu');
+  const [selectedClassFilter, setSelectedClassFilter] = useState<string>('Semua Kelas');
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
   // Form State
+  const [qClassGrade, setQClassGrade] = useState<string>('Kelas 5 SD');
   const [qText, setQText] = useState('');
   const [optionA, setOptionA] = useState('');
   const [optionB, setOptionB] = useState('');
@@ -34,10 +52,16 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
   const [expReward, setExpReward] = useState<number>(50);
   const [goldReward, setGoldReward] = useState<number>(20);
 
-  const filteredQuestions = questions.filter((q) => q.locationId === selectedLocationId);
+  const filteredQuestions = questions.filter((q) => {
+    const matchesLoc = q.locationId === selectedLocationId;
+    const matchesClass = selectedClassFilter === 'Semua Kelas' || !q.classGrade || q.classGrade === selectedClassFilter || q.classGrade === 'Semua Kelas';
+    return matchesLoc && matchesClass;
+  });
+
   const selectedLocation = locations.find((l) => l.id === selectedLocationId);
 
   const resetForm = () => {
+    setQClassGrade('Kelas 5 SD');
     setQText('');
     setOptionA('');
     setOptionB('');
@@ -62,6 +86,7 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
     soundFx.playClick();
     setEditingQuestion(q);
     setIsAdding(false);
+    setQClassGrade(q.classGrade || 'Kelas 5 SD');
     setQText(q.question);
     setOptionA(q.options[0] || '');
     setOptionB(q.options[1] || '');
@@ -86,6 +111,7 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
     const qPayload: Question = {
       id: editingQuestion ? editingQuestion.id : `q_${selectedLocationId}_${Date.now()}`,
       locationId: selectedLocationId,
+      classGrade: qClassGrade,
       question: qText.trim(),
       options: [optionA.trim(), optionB.trim(), optionC.trim() || 'Choice C', optionD.trim() || 'Choice D'],
       correctAnswer,
@@ -104,9 +130,113 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
     resetForm();
   };
 
+  // Export Bank Soal per Kelas
+  const handleExportClassBank = () => {
+    soundFx.playClick();
+    const bankQuestions = selectedClassFilter === 'Semua Kelas'
+      ? questions
+      : questions.filter((q) => q.classGrade === selectedClassFilter || q.classGrade === 'Semua Kelas');
+
+    if (bankQuestions.length === 0) {
+      alert(`Tidak ada soal terdaftar untuk kategori ${selectedClassFilter}`);
+      return;
+    }
+
+    const dataStr = JSON.stringify(bankQuestions, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bank_soal_${selectedClassFilter.replace(/\s+/g, '_').toLowerCase()}_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Import Bank Soal JSON
+  const handleImportClassBank = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target?.result as string);
+        if (Array.isArray(imported)) {
+          imported.forEach((q: Question) => {
+            if (q.question && q.options) {
+              onAddQuestion({
+                ...q,
+                id: `imp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              });
+            }
+          });
+          soundFx.playCorrect();
+          alert(`Berhasil mengimpor ${imported.length} soal ke dalam Bank Soal Pak Guru!`);
+        }
+      } catch (err) {
+        alert('Format file JSON bank soal tidak valid.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="space-y-4 font-sans text-slate-100">
       
+      {/* Top Bar Filter & Bank Soal Quick Manager */}
+      <div className="bg-slate-950 border border-slate-800 p-3.5 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="p-2 bg-purple-950 border border-purple-500 rounded-lg text-purple-300">
+            <Filter className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-amber-300 font-mono block">
+              FILTER & SIMPAN BANK SOAL PER KELAS
+            </span>
+            <span className="text-[11px] text-slate-400">
+              Panggil dan mainkan soal khusus berdasarkan tingkatan kelas siswa.
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+          <select
+            value={selectedClassFilter}
+            onChange={(e) => {
+              soundFx.playClick();
+              setSelectedClassFilter(e.target.value);
+            }}
+            className="bg-slate-900 border-2 border-purple-500/80 rounded-lg px-3 py-1.5 text-xs text-amber-300 font-bold focus:outline-none cursor-pointer"
+          >
+            {CLASS_GRADE_OPTIONS.map((cg) => (
+              <option key={cg} value={cg} className="bg-slate-950 text-slate-100">
+                📌 {cg}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={handleExportClassBank}
+            className="px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 border border-indigo-500 text-indigo-200 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow"
+            title="Simpan/Ekspor Bank Soal per Kelas"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Simpan File Soal</span>
+          </button>
+
+          <label className="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 border border-emerald-400 text-emerald-100 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow">
+            <Upload className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Panggil File Soal</span>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportClassBank}
+              className="hidden"
+            />
+          </label>
+        </div>
+      </div>
+
       {/* Location Selector Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800">
         {locations.map((loc) => {
@@ -182,9 +312,14 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <span className="text-xs font-mono font-bold text-amber-400">
-                      Soal #{idx + 1}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-amber-400">
+                        Soal #{idx + 1}
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-purple-950 border border-purple-500/80 text-purple-200 text-[10px] font-mono font-bold">
+                        {q.classGrade || 'Semua Kelas'}
+                      </span>
+                    </div>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleStartEdit(q)}
@@ -254,6 +389,21 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({
               </div>
 
               <form onSubmit={handleSaveForm} className="space-y-3 text-xs">
+                <div>
+                  <label className="block font-bold text-slate-300 mb-1">
+                    Target Kelas / Tingkatan
+                  </label>
+                  <select
+                    value={qClassGrade}
+                    onChange={(e) => setQClassGrade(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 focus:border-amber-500 rounded-lg p-2 text-xs text-amber-300 font-bold focus:outline-none"
+                  >
+                    {CLASS_GRADE_OPTIONS.map((cg) => (
+                      <option key={cg} value={cg}>{cg}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
                   <label className="block font-bold text-slate-300 mb-1">
                     Teks Pertanyaan Soal
