@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
-import { LocationLevel, StudentProfile, Question } from '../../types';
+import { LocationLevel, StudentProfile, Question, PlayMode, MultiplayerRoom } from '../../types';
 import { soundFx } from '../../utils/soundEffects';
 import { 
   ShieldAlert, BookOpen, Laptop, Backpack, Award, Settings, Save, LogOut, 
-  Sparkles, MapPin, Map as MapIcon, ChevronRight, MessageSquare, Compass, Scroll, Lock, CheckCircle2, Star, TrendingUp
+  Sparkles, MapPin, Map as MapIcon, ChevronRight, MessageSquare, Compass, Scroll, Lock, CheckCircle2, Star, TrendingUp,
+  Gamepad2, Users, Key, Crown, Play
 } from 'lucide-react';
+import { MultiplayerLobby } from './MultiplayerLobby';
 
 interface GameCanvasProps {
   student: StudentProfile;
   locations: LocationLevel[];
   questions: Question[];
+  playMode: PlayMode;
+  multiplayerRoom: MultiplayerRoom;
+  isMultiplayerAdmin: boolean;
+  onChangePlayMode: (mode: PlayMode) => void;
+  onUpdateMultiplayerRoom: (updatedRoom: MultiplayerRoom) => void;
+  onStartMultiplayerGame: () => void;
+  onOpenJoinMultiplayerModal: () => void;
+  onToggleMultiplayerAdmin: () => void;
   onSelectLocation: (loc: LocationLevel) => void;
   onOpenInventory: () => void;
   onOpenLeaderboard: () => void;
@@ -17,12 +27,21 @@ interface GameCanvasProps {
   onOpenStudentSetup: () => void;
   onOpenDbModal: () => void;
   onOpenTeacherAuth: () => void;
+  onOpenTour: () => void;
 }
 
 export const GameCanvas: React.FC<GameCanvasProps> = ({
   student,
   locations,
   questions,
+  playMode,
+  multiplayerRoom,
+  isMultiplayerAdmin,
+  onChangePlayMode,
+  onUpdateMultiplayerRoom,
+  onStartMultiplayerGame,
+  onOpenJoinMultiplayerModal,
+  onToggleMultiplayerAdmin,
   onSelectLocation,
   onOpenInventory,
   onOpenLeaderboard,
@@ -30,6 +49,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onOpenStudentSetup,
   onOpenDbModal,
   onOpenTeacherAuth,
+  onOpenTour,
 }) => {
   // Sort locations by level number 1 to 6
   const sortedLocations = [...locations].sort((a, b) => a.levelNumber - b.levelNumber);
@@ -117,8 +137,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
           {/* Top Center: Main Game Banner Title */}
           <div className="text-center space-y-1">
-            <h1 className="text-2xl sm:text-4xl font-extrabold font-silkscreen text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 drop-shadow-[0_4px_6px_rgba(0,0,0,1)] tracking-wider uppercase">
-              PETUALANGAN PAK GURUAI
+            <h1 className="text-xl sm:text-3xl font-extrabold font-silkscreen text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 drop-shadow-[0_4px_6px_rgba(0,0,0,1)] tracking-wider uppercase">
+              PETUALANGAN KELAS PAK GURU
             </h1>
             <div className="text-xs text-amber-200/90 tracking-widest font-silkscreen font-bold flex items-center justify-center gap-2">
               <span>BELAJAR</span>
@@ -166,6 +186,75 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           </div>
 
         </div>
+
+        {/* Mode Selection Bar: Solo vs Multiplayer */}
+        <div className="bg-slate-950/95 border-y-2 border-amber-800/80 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-2 z-10 shadow-md">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold font-mono text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Gamepad2 className="w-4 h-4 text-amber-400" />
+              MODE PERMAINAN:
+            </span>
+            <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800 gap-1 text-xs font-mono font-bold">
+              <button
+                onClick={() => {
+                  soundFx.playClick();
+                  onChangePlayMode('solo');
+                }}
+                className={`px-3 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+                  playMode === 'solo'
+                    ? 'bg-amber-500 text-slate-950 shadow ring-1 ring-amber-300 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>👤 Bermain Sendiri (Solo)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundFx.playClick();
+                  onChangePlayMode('multiplayer');
+                }}
+                className={`px-3 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+                  playMode === 'multiplayer'
+                    ? 'bg-gradient-to-r from-amber-500 to-indigo-500 text-slate-950 shadow ring-1 ring-amber-300 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>👥 Bermain Bersama (Multiplayer)</span>
+              </button>
+            </div>
+          </div>
+
+          {playMode === 'multiplayer' && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-amber-200 font-mono">
+                Ruang Kelas: <strong className="text-amber-400">{multiplayerRoom.roomCode}</strong> ({multiplayerRoom.players.length} Siswa)
+              </span>
+              <button
+                onClick={onOpenJoinMultiplayerModal}
+                className="px-2.5 py-1 bg-amber-950 hover:bg-amber-900 border border-amber-600/80 text-amber-300 font-bold text-xs rounded-lg transition cursor-pointer flex items-center gap-1 shadow"
+              >
+                <Key className="w-3.5 h-3.5" />
+                <span>Ubah / Buat Room</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* When playMode === 'multiplayer', show the MultiplayerLobby Component */}
+        {playMode === 'multiplayer' && (
+          <div className="p-3 pb-0 z-10">
+            <MultiplayerLobby
+              room={multiplayerRoom}
+              student={student}
+              isAdmin={isMultiplayerAdmin}
+              onUpdateRoom={onUpdateMultiplayerRoom}
+              onStartGame={onStartMultiplayerGame}
+              onLeaveRoom={() => onChangePlayMode('solo')}
+              onToggleAdmin={onToggleMultiplayerAdmin}
+            />
+          </div>
+        )}
 
         {/* Main Center Playground View Grid (2 Columns: Left Quest/Menu, Right WIDE RPG Playground) */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 relative z-10">
@@ -253,6 +342,20 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                 <button
                   onClick={() => {
                     soundFx.playClick();
+                    onOpenTour();
+                  }}
+                  className="w-full text-left p-2 rounded-xl bg-amber-950/90 hover:bg-amber-900/90 border border-amber-500/80 text-amber-300 font-bold transition flex items-center justify-between cursor-pointer shadow animate-pulse"
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Panduan Pemula (Tur Feature)
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    soundFx.playClick();
                     onOpenLeaderboard();
                   }}
                   className="w-full text-left p-2 rounded-xl bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
@@ -314,7 +417,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                 "Ilmu adalah petualangan tanpa akhir."
               </p>
               <span className="text-[10px] text-amber-400 font-silkscreen block mt-0.5">
-                — Pak GuruAI
+                — Pak Guru
               </span>
             </div>
 

@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-extrabold text-lg sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] tracking-wide font-mono">
-                PETUALANGAN PAK GURUAI
+                PETUALANGAN KELAS PAK GURU
               </h1>
               <span className="text-[10px] sm:text-xs bg-amber-500/20 text-amber-300 border border-amber-500/50 px-1.5 py-0.5 rounded font-mono uppercase font-bold">
                 RPG AI

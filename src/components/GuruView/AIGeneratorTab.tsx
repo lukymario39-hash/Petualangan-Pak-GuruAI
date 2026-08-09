@@ -168,7 +168,7 @@ export const AIGeneratorTab: React.FC<AIGeneratorTabProps> = ({
             </div>
             <div>
               <h3 className="text-base font-extrabold text-amber-300 font-mono">
-                GENERATOR SOAL KUIS AI (GEMINI 3.6 FLASH)
+                GENERATOR SOAL KUIS AI (GEMINI 2.5 FLASH)
               </h3>
               <p className="text-xs text-slate-400">
                 Buat soal kuis interaktif secara otomatis berdasarkan Mata Pelajaran, Jenjang, dan Topik.

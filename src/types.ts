@@ -1,4 +1,27 @@
 export type GameMode = 'siswa' | 'guru';
+export type PlayMode = 'solo' | 'multiplayer';
+
+export interface MultiplayerPlayer {
+  id: string;
+  name: string;
+  classGrade: string;
+  avatar: string;
+  level: number;
+  score: number;
+  gold: number;
+  status: 'Menunggu Start ⏳' | 'Siap Bermain 🟢' | 'Sedang Berpetualang 🎮' | 'Selesai Kuis 🏆';
+  isHost: boolean;
+  joinedAt: string;
+}
+
+export interface MultiplayerRoom {
+  roomCode: string;
+  roomName: string;
+  hostName: string;
+  isGameStarted: boolean;
+  players: MultiplayerPlayer[];
+  createdAt: string;
+}
 
 export interface LocationLevel {
   id: string;

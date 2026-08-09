@@ -149,7 +149,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({
           
           <div className="flex items-center gap-2">
             <div className="text-right hidden sm:block">
-              <div className="text-xs text-amber-200 font-bold">Soal Pak GuruAI</div>
+              <div className="text-xs text-amber-200 font-bold">Soal Pak Guru</div>
               <div className="text-sm font-mono font-extrabold text-amber-400">
                 {quizCompleted ? 'SELESAI' : `${currentIndex + 1} / ${questions.length}`}
               </div>
@@ -265,7 +265,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({
                       )}
                     </div>
                     <p className="text-[11px] leading-relaxed opacity-95 pt-1">
-                      <strong>Penjelasan Pak GuruAI:</strong> {currentQ.explanation}
+                      <strong>Penjelasan Pak Guru:</strong> {currentQ.explanation}
                     </p>
                   </div>
                 )}
@@ -332,7 +332,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({
             </div>
 
             <div className="p-3 bg-emerald-950/80 border border-emerald-500 rounded-xl text-xs text-emerald-200 max-w-md mx-auto">
-              ✨ Nilai kuis dan progres kamu telah berhasil dicatat dan disinkronkan ke Database Google Sheets Pak GuruAI!
+              ✨ Nilai kuis dan progres kamu telah berhasil dicatat dan disinkronkan ke Database Google Sheets Pak Guru!
             </div>
 
             <div className="pt-2">

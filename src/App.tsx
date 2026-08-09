@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GameMode, StudentProfile, LocationLevel, Question, DatabaseConfig, StudentSubmission } from './types';
+import { GameMode, PlayMode, StudentProfile, LocationLevel, Question, DatabaseConfig, StudentSubmission, MultiplayerRoom } from './types';
 import {
   INITIAL_LOCATIONS,
   INITIAL_QUESTIONS,
@@ -19,6 +19,8 @@ import { StudentSetupModal } from './components/SiswaView/StudentSetupModal';
 import { InventoryModal } from './components/SiswaView/InventoryModal';
 import { LeaderboardModal } from './components/SiswaView/LeaderboardModal';
 import { StudentProgressModal } from './components/SiswaView/StudentProgressModal';
+import { NewUserTourModal } from './components/SiswaView/NewUserTourModal';
+import { JoinMultiplayerModal } from './components/SiswaView/JoinMultiplayerModal';
 
 import { GuruDashboard } from './components/GuruView/GuruDashboard';
 
@@ -71,6 +73,129 @@ export default function App() {
     return INITIAL_QUESTIONS;
   });
 
+  // Play Mode & Multiplayer state
+  const [playMode, setPlayMode] = useState<PlayMode>('solo');
+  const [isMultiplayerAdmin, setIsMultiplayerAdmin] = useState(true);
+  const [isJoinMultiplayerModalOpen, setIsJoinMultiplayerModalOpen] = useState(false);
+  const [multiplayerRoom, setMultiplayerRoom] = useState<MultiplayerRoom>(() => {
+    return {
+      roomCode: 'KELAS-8A',
+      roomName: 'Ruang Kelas 8A',
+      hostName: 'Admin Kelas',
+      isGameStarted: false,
+      createdAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+      players: [],
+    };
+  });
+
+  // Sync current student into room player list whenever student changes
+  useEffect(() => {
+    setMultiplayerRoom((prev) => {
+      const hasMe = prev.players.some((p) => p.name === student.name);
+      if (!hasMe) {
+        return {
+          ...prev,
+          players: [
+            ...prev.players,
+            {
+              id: `p_my_${student.id}`,
+              name: student.name,
+              classGrade: student.classGrade || 'Kelas 8A',
+              avatar: student.avatar,
+              level: student.level,
+              score: student.currentExp,
+              gold: student.gold,
+              status: prev.isGameStarted ? 'Sedang Berpetualang 🎮' : 'Siap Bermain 🟢',
+              isHost: false,
+              joinedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            },
+          ],
+        };
+      }
+      return {
+        ...prev,
+        players: prev.players.map((p) =>
+          p.name === student.name
+            ? {
+                ...p,
+                classGrade: student.classGrade || p.classGrade,
+                avatar: student.avatar,
+                level: student.level,
+                score: student.currentExp,
+                gold: student.gold,
+              }
+            : p
+        ),
+      };
+    });
+  }, [student.name, student.avatar, student.level, student.currentExp, student.gold, student.classGrade]);
+
+  const handleCreateMultiplayerRoom = (code: string, name: string) => {
+    setMultiplayerRoom({
+      roomCode: code,
+      roomName: name,
+      hostName: `${student.name} (Admin)`,
+      isGameStarted: false,
+      createdAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+      players: [
+        {
+          id: `p_admin_${Date.now()}`,
+          name: student.name,
+          classGrade: student.classGrade || 'Kelas 8A',
+          avatar: student.avatar,
+          level: student.level,
+          score: student.currentExp,
+          gold: student.gold,
+          status: 'Siap Bermain 🟢',
+          isHost: true,
+          joinedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        },
+      ],
+    });
+    setIsMultiplayerAdmin(true);
+    setPlayMode('multiplayer');
+  };
+
+  const handleJoinMultiplayerRoom = (code: string) => {
+    setMultiplayerRoom((prev) => {
+      const existingPlayer = prev.players.find((p) => p.name === student.name);
+      if (!existingPlayer) {
+        return {
+          ...prev,
+          roomCode: code,
+          players: [
+            ...prev.players,
+            {
+              id: `p_joined_${Date.now()}`,
+              name: student.name,
+              classGrade: student.classGrade || 'Kelas 8A',
+              avatar: student.avatar,
+              level: student.level,
+              score: student.currentExp,
+              gold: student.gold,
+              status: prev.isGameStarted ? 'Sedang Berpetualang 🎮' : 'Siap Bermain 🟢',
+              isHost: false,
+              joinedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            },
+          ],
+        };
+      }
+      return { ...prev, roomCode: code };
+    });
+    setPlayMode('multiplayer');
+  };
+
+  const handleStartMultiplayerGame = () => {
+    setMultiplayerRoom((prev) => ({
+      ...prev,
+      isGameStarted: true,
+      players: prev.players.map((p) => ({
+        ...p,
+        status: 'Sedang Berpetualang 🎮',
+      })),
+    }));
+  };
+
   // Modals state
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
   const [isTeacherAuthOpen, setIsTeacherAuthOpen] = useState(false);
@@ -78,6 +203,10 @@ export default function App() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isProgressOpen, setIsProgressOpen] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(() => {
+    const hasSeen = localStorage.getItem('pakguruai_tour_completed');
+    return !hasSeen;
+  });
   const [selectedQuizLocation, setSelectedQuizLocation] = useState<LocationLevel | null>(null);
 
   // Save to localStorage upon state changes
@@ -254,6 +383,19 @@ export default function App() {
             student={student}
             locations={locations}
             questions={questions}
+            playMode={playMode}
+            multiplayerRoom={multiplayerRoom}
+            isMultiplayerAdmin={isMultiplayerAdmin}
+            onChangePlayMode={(mode) => {
+              setPlayMode(mode);
+              if (mode === 'multiplayer') {
+                setIsJoinMultiplayerModalOpen(true);
+              }
+            }}
+            onUpdateMultiplayerRoom={(updatedRoom) => setMultiplayerRoom(updatedRoom)}
+            onStartMultiplayerGame={handleStartMultiplayerGame}
+            onOpenJoinMultiplayerModal={() => setIsJoinMultiplayerModalOpen(true)}
+            onToggleMultiplayerAdmin={() => setIsMultiplayerAdmin((prev) => !prev)}
             onSelectLocation={handleSelectLocation}
             onOpenInventory={() => setIsInventoryOpen(true)}
             onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
@@ -261,6 +403,7 @@ export default function App() {
             onOpenStudentSetup={() => setIsStudentSetupOpen(true)}
             onOpenDbModal={() => setIsDbModalOpen(true)}
             onOpenTeacherAuth={() => setIsTeacherAuthOpen(true)}
+            onOpenTour={() => setIsTourOpen(true)}
           />
         ) : (
           <GuruDashboard
@@ -327,6 +470,22 @@ export default function App() {
         onClose={() => setIsProgressOpen(false)}
         student={student}
         dbConfig={dbConfig}
+      />
+
+      <NewUserTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onOpenInventory={() => setIsInventoryOpen(true)}
+        onOpenProgressModal={() => setIsProgressOpen(true)}
+        onOpenStudentSetup={() => setIsStudentSetupOpen(true)}
+      />
+
+      <JoinMultiplayerModal
+        isOpen={isJoinMultiplayerModalOpen}
+        onClose={() => setIsJoinMultiplayerModalOpen(false)}
+        student={student}
+        onCreateRoom={handleCreateMultiplayerRoom}
+        onJoinRoom={handleJoinMultiplayerRoom}
       />
 
       {selectedQuizLocation && (
