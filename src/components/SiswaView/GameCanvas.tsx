@@ -3,7 +3,7 @@ import { LocationLevel, StudentProfile, Question } from '../../types';
 import { soundFx } from '../../utils/soundEffects';
 import { 
   ShieldAlert, BookOpen, Laptop, Backpack, Award, Settings, Save, LogOut, 
-  Sparkles, MapPin, Map as MapIcon, ChevronRight, MessageSquare, Compass, Scroll
+  Sparkles, MapPin, Map as MapIcon, ChevronRight, MessageSquare, Compass, Scroll, Lock, CheckCircle2, Star
 } from 'lucide-react';
 
 interface GameCanvasProps {
@@ -29,83 +29,84 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onOpenDbModal,
   onOpenTeacherAuth,
 }) => {
-  const [activeMenuTab, setActiveMenuTab] = useState<string | null>(null);
+  // Sort locations by level number 1 to 6
+  const sortedLocations = [...locations].sort((a, b) => a.levelNumber - b.levelNumber);
 
   // Find current location details
   const currentLoc = locations.find((l) => l.id === student.currentLocationId) || locations[0];
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 font-mono select-none">
+    <div className="w-full max-w-[1400px] mx-auto p-2 sm:p-4 font-pixelify select-none">
       
       {/* Outer Retro Pixel Frame Container */}
-      <div className="bg-slate-950 border-4 border-amber-800 rounded-2xl shadow-2xl overflow-hidden relative text-slate-100 flex flex-col min-h-[640px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+      <div className="bg-slate-950 border-4 border-amber-800 rounded-2xl shadow-[0_0_35px_rgba(217,119,6,0.25)] overflow-hidden relative text-slate-100 flex flex-col min-h-[680px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         
         {/* Top Header Section */}
-        <div className="p-3 sm:p-4 bg-slate-950/90 border-b-2 border-amber-800 flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
+        <div className="p-3 sm:p-4 bg-slate-950/95 border-b-2 border-amber-800 flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
           
           {/* Top Left: Character Profile Status Frame */}
-          <div className="flex items-center gap-3 bg-slate-900/90 border-2 border-amber-700/80 p-2.5 rounded-xl shadow-lg w-full md:w-auto">
-            <div className="relative">
-              <div className="w-14 h-14 bg-gradient-to-br from-amber-600 to-amber-900 border-2 border-amber-400 rounded-lg flex items-center justify-center text-3xl shadow-inner">
+          <div className="flex items-center gap-3 bg-slate-900/90 border-2 border-amber-700/80 p-2.5 rounded-2xl shadow-lg w-full md:w-auto">
+            <div className="relative group cursor-pointer" onClick={onOpenStudentSetup}>
+              <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-950 border-2 border-amber-400 rounded-xl flex items-center justify-center text-4xl shadow-inner transform group-hover:scale-105 transition animate-pixel-bob">
                 {student.avatar}
               </div>
-              <span className="absolute -bottom-2 -right-2 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded border border-amber-300 font-mono">
-                Lv. {student.level}
+              <span className="absolute -bottom-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md border border-amber-200 font-silkscreen shadow">
+                Lv.{student.level}
               </span>
             </div>
 
-            <div className="flex-1 space-y-1 min-w-[150px]">
+            <div className="flex-1 space-y-1 min-w-[160px]">
               <div className="flex items-center justify-between text-xs font-bold text-amber-300">
-                <span className="truncate max-w-[110px]">{student.name}</span>
-                <span className="text-[10px] text-slate-400 font-mono">{student.classGrade}</span>
+                <span className="truncate max-w-[120px] font-silkscreen">{student.name}</span>
+                <span className="text-[10px] text-amber-200/80 font-mono bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-700/50">{student.classGrade}</span>
               </div>
 
               {/* HP Bar */}
               <div className="flex items-center gap-1.5 text-[10px]">
-                <span className="text-red-400 font-bold w-4">HP</span>
-                <div className="flex-1 h-2.5 bg-slate-950 border border-slate-700 rounded-full overflow-hidden">
+                <span className="text-red-400 font-bold w-5 font-silkscreen">HP</span>
+                <div className="flex-1 h-3 bg-slate-950 border border-slate-700 rounded-full overflow-hidden p-0.5 shadow-inner">
                   <div
-                    className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-400 rounded-full transition-all duration-300"
                     style={{ width: `${(student.hp / student.maxHp) * 100}%` }}
                   />
                 </div>
-                <span className="text-slate-300 w-14 text-right">{student.hp}/{student.maxHp}</span>
+                <span className="text-slate-300 w-14 text-right font-mono">{student.hp}/{student.maxHp}</span>
               </div>
 
               {/* MP Bar */}
               <div className="flex items-center gap-1.5 text-[10px]">
-                <span className="text-blue-400 font-bold w-4">MP</span>
-                <div className="flex-1 h-2.5 bg-slate-950 border border-slate-700 rounded-full overflow-hidden">
+                <span className="text-blue-400 font-bold w-5 font-silkscreen">MP</span>
+                <div className="flex-1 h-3 bg-slate-950 border border-slate-700 rounded-full overflow-hidden p-0.5 shadow-inner">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 rounded-full transition-all duration-300"
                     style={{ width: `${(student.mp / student.maxMp) * 100}%` }}
                   />
                 </div>
-                <span className="text-slate-300 w-14 text-right">{student.mp}/{student.maxMp}</span>
+                <span className="text-slate-300 w-14 text-right font-mono">{student.mp}/{student.maxMp}</span>
               </div>
 
               {/* Energy Bar */}
               <div className="flex items-center gap-1.5 text-[10px]">
-                <span className="text-amber-400 font-bold w-4">EN</span>
-                <div className="flex-1 h-2.5 bg-slate-950 border border-slate-700 rounded-full overflow-hidden">
+                <span className="text-amber-400 font-bold w-5 font-silkscreen">EN</span>
+                <div className="flex-1 h-3 bg-slate-950 border border-slate-700 rounded-full overflow-hidden p-0.5 shadow-inner">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-300 rounded-full transition-all duration-300"
                     style={{ width: `${(student.energy / student.maxEnergy) * 100}%` }}
                   />
                 </div>
-                <span className="text-slate-300 w-14 text-right">{student.energy}/{student.maxEnergy}</span>
+                <span className="text-slate-300 w-14 text-right font-mono">{student.energy}/{student.maxEnergy}</span>
               </div>
 
               {/* EXP Bar */}
               <div className="flex items-center gap-1.5 text-[10px] pt-0.5">
-                <span className="text-emerald-400 font-bold w-6">EXP</span>
+                <span className="text-emerald-400 font-bold w-6 font-silkscreen">EXP</span>
                 <div className="flex-1 h-2 bg-slate-950 border border-slate-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-400 rounded-full transition-all duration-300"
                     style={{ width: `${(student.currentExp / student.maxExp) * 100}%` }}
                   />
                 </div>
-                <span className="text-emerald-300 font-bold w-10 text-right">
+                <span className="text-emerald-300 font-bold w-10 text-right font-mono">
                   {Math.round((student.currentExp / student.maxExp) * 100)}%
                 </span>
               </div>
@@ -114,282 +115,145 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
           {/* Top Center: Main Game Banner Title */}
           <div className="text-center space-y-1">
-            <h1 className="text-xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] tracking-widest uppercase">
+            <h1 className="text-2xl sm:text-4xl font-extrabold font-silkscreen text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 drop-shadow-[0_4px_6px_rgba(0,0,0,1)] tracking-wider uppercase">
               PETUALANGAN PAK GURUAI
             </h1>
-            <div className="text-[11px] sm:text-xs text-amber-200/90 tracking-widest font-sans font-bold flex items-center justify-center gap-2">
+            <div className="text-xs text-amber-200/90 tracking-widest font-silkscreen font-bold flex items-center justify-center gap-2">
               <span>BELAJAR</span>
-              <span>◆</span>
+              <span className="text-amber-500">◆</span>
               <span>BERKARYA</span>
-              <span>◆</span>
+              <span className="text-amber-500">◆</span>
               <span>MENGINSPIRASI</span>
             </div>
             
             {/* Quote Banner */}
-            <div className="mt-1 inline-flex items-center gap-2 bg-slate-900/90 border border-amber-600/60 px-3 py-1 rounded-full text-[11px] text-amber-300 font-sans shadow-md">
+            <div className="mt-1 inline-flex items-center gap-2 bg-slate-900/90 border border-amber-600/70 px-3 py-1 rounded-full text-xs text-amber-300 font-pixelify shadow-md">
               <BookOpen className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Setiap ilmu adalah senjata, setiap siswa adalah pahlawan.</span>
             </div>
           </div>
 
-          {/* Top Right: World Map Widget ("PETA DUNIA") */}
-          <div className="bg-slate-900/90 border-2 border-amber-700/80 p-2 rounded-xl shadow-lg w-full md:w-56 text-center">
-            <div className="text-xs font-bold text-amber-300 mb-1 flex items-center justify-center gap-1.5 uppercase border-b border-amber-800 pb-1">
-              <Compass className="w-3.5 h-3.5 text-amber-400" />
-              <span>PETA DUNIA</span>
+          {/* Top Right: World Map Status & Quick Stats */}
+          <div className="bg-slate-900/90 border-2 border-amber-700/80 p-2.5 rounded-2xl shadow-lg w-full md:w-60 text-center">
+            <div className="text-xs font-bold text-amber-300 mb-1.5 flex items-center justify-center gap-1.5 font-silkscreen uppercase border-b border-amber-800 pb-1">
+              <Compass className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '10s' }} />
+              <span>PETA DUNIA RPG</span>
             </div>
 
-            {/* Thumbnail map box */}
-            <div className="h-20 bg-emerald-950/80 border border-amber-800 rounded relative overflow-hidden flex items-center justify-center group cursor-pointer"
-                 onClick={() => {
-                   soundFx.playTravel();
-                   onSelectLocation(currentLoc);
-                 }}>
-              {/* Fake Pixel Map Scenery background */}
-              <div className="absolute inset-0 bg-[radial-gradient(#15803d_1px,transparent_1px)] [background-size:8px_8px] opacity-40" />
-              <div className="text-[10px] text-amber-200 z-10 bg-slate-950/80 px-2 py-1 rounded border border-amber-600/50 flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-red-400 animate-bounce" />
-                <span className="font-bold">{currentLoc.name}</span>
+            <div className="grid grid-cols-2 gap-1.5 text-xs text-slate-300 mb-1 font-pixelify">
+              <div className="bg-slate-950 border border-slate-800 p-1 rounded-lg">
+                <span className="text-[10px] text-slate-400 block font-silkscreen">LOKASI</span>
+                <span className="text-amber-400 font-bold truncate block">{currentLoc.name}</span>
+              </div>
+              <div className="bg-slate-950 border border-slate-800 p-1 rounded-lg">
+                <span className="text-[10px] text-slate-400 block font-silkscreen">PROGRESS</span>
+                <span className="text-emerald-400 font-bold block">{student.completedLocations.length}/6 LEVEL</span>
               </div>
             </div>
 
-            <div className="text-[11px] text-slate-300 mt-1 font-bold flex items-center justify-between px-1">
-              <span className="text-slate-400">Lokasi:</span>
-              <span className="text-amber-400 truncate">{currentLoc.name}</span>
-            </div>
+            <button
+              onClick={() => {
+                soundFx.playTravel();
+                onSelectLocation(currentLoc);
+              }}
+              className="w-full py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold rounded-lg text-xs font-silkscreen uppercase tracking-wider shadow transition cursor-pointer flex items-center justify-center gap-1"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Mulai Kuis Level</span>
+            </button>
           </div>
 
         </div>
 
-        {/* Main Center Playground View Grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 p-3 relative z-10">
+        {/* Main Center Playground View Grid (2 Columns: Left Quest/Menu, Right WIDE RPG Playground) */}
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 relative z-10">
           
-          {/* Left Column (3 cols): Quest Panel */}
-          <div className="md:col-span-3 space-y-3">
-            <div className="bg-slate-900/90 border-2 border-amber-700/80 rounded-xl p-3 shadow-lg">
-              <div className="text-xs font-extrabold text-amber-300 mb-2 border-b border-amber-800 pb-1.5 flex items-center gap-1.5 uppercase">
+          {/* Left Column (3 cols): Quests & Menu */}
+          <div className="lg:col-span-3 space-y-3 flex flex-col justify-between">
+            
+            {/* Quest Panel */}
+            <div className="bg-slate-900/90 border-2 border-amber-700/80 rounded-2xl p-3 shadow-lg">
+              <div className="text-xs font-extrabold text-amber-300 mb-2 border-b border-amber-800 pb-1.5 flex items-center gap-1.5 font-silkscreen uppercase">
                 <Scroll className="w-4 h-4 text-amber-400" />
-                <span>QUEST AKTIF</span>
+                <span>QUEST & MISI</span>
               </div>
 
-              <div className="space-y-2.5 text-xs">
+              <div className="space-y-2 text-xs font-pixelify">
                 {/* Misi Utama */}
-                <div className="bg-slate-950/90 p-2.5 rounded-lg border border-amber-600/60 space-y-1">
+                <div className="bg-slate-950/90 p-2.5 rounded-xl border border-amber-600/60 space-y-1">
                   <div className="flex items-center justify-between font-bold text-amber-300">
                     <span className="flex items-center gap-1">
                       ⭐ Misi Utama
                     </span>
-                    <span className="text-[10px] font-mono text-amber-400">
-                      {student.completedLocations.length}/6
+                    <span className="text-[10px] font-mono text-amber-400 bg-amber-950/80 px-1 rounded">
+                      {student.completedLocations.length}/6 Level
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-300 font-sans">
-                    Kalahkan Kebodohan di Menara Malas
+                  <p className="text-xs text-slate-300">
+                    Kalahkan Kebodohan di Menara Malas!
                   </p>
                 </div>
 
                 {/* Misi Sampingan */}
-                <div className="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
-                  <div className="flex items-center justify-between font-bold text-blue-300">
+                <div className="bg-slate-950/90 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                  <div className="flex items-center justify-between font-bold text-cyan-300">
                     <span className="flex items-center gap-1">
                       💬 Misi Sampingan
                     </span>
-                    <span className="text-[10px] font-mono text-blue-400">
-                      2/3
+                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 px-1 rounded">
+                      2/3 Soal
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-300 font-sans">
+                  <p className="text-xs text-slate-300">
                     Bantu siswa yang kesulitan belajar
                   </p>
                 </div>
 
                 {/* Misi Harian */}
-                <div className="bg-slate-950/90 p-2.5 rounded-lg border border-emerald-800 space-y-1">
+                <div className="bg-slate-950/90 p-2.5 rounded-xl border border-emerald-800 space-y-1">
                   <div className="flex items-center justify-between font-bold text-emerald-300">
                     <span className="flex items-center gap-1">
                       🍃 Misi Harian
                     </span>
-                    <span className="text-[10px] font-mono text-emerald-400">
-                      1/1 ✓
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-1 rounded">
+                      Selesai ✓
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-300 font-sans">
+                  <p className="text-xs text-slate-300">
                     Selesaikan kuis 1 lokasi level hari ini
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Quote Box Bottom Left */}
-            <div className="bg-slate-900/90 border border-amber-800/80 p-3 rounded-xl text-center shadow-lg">
-              <p className="text-xs text-amber-200 font-sans italic font-medium">
-                "Ilmu adalah petualangan tanpa akhir."
-              </p>
-              <span className="text-[10px] text-amber-400/80 block mt-1 font-mono">
-                — Pak GuruAI
-              </span>
-            </div>
-          </div>
-
-          {/* Center Column (6 cols): RPG World Pixel Interactive Canvas */}
-          <div className="md:col-span-6 bg-slate-900 border-2 border-amber-700/80 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between min-h-[380px] shadow-2xl bg-gradient-to-b from-amber-950/40 via-emerald-950/30 to-slate-950">
-            
-            {/* Interactive Location Level Pins Map Overlay */}
-            <div className="absolute inset-0 p-4">
-              
-              {/* Background Fantasy Map Visual Elements */}
-              <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:16px_16px]" />
-              
-              {/* Render Location Pins */}
-              {locations.map((loc) => {
-                const isCurrent = loc.id === student.currentLocationId;
-                const questionCount = questions.filter((q) => q.locationId === loc.id).length;
-
-                return (
-                  <div
-                    key={loc.id}
-                    style={{ left: `${loc.mapX}%`, top: `${loc.mapY}%` }}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 group z-20"
-                  >
-                    <button
-                      onClick={() => {
-                        soundFx.playTravel();
-                        onSelectLocation(loc);
-                      }}
-                      className={`relative p-2 rounded-xl border-2 shadow-2xl transition transform hover:scale-110 cursor-pointer flex items-center justify-center ${
-                        isCurrent
-                          ? 'bg-amber-500 text-slate-950 border-amber-200 ring-4 ring-amber-400/50 animate-bounce'
-                          : loc.isUnlocked
-                          ? 'bg-slate-900/90 text-amber-300 border-amber-500 hover:bg-amber-900'
-                          : 'bg-slate-950/90 text-slate-500 border-slate-800 opacity-60'
-                      }`}
-                      title={`${loc.name} - Level ${loc.levelNumber} (${questionCount} Soal)`}
-                    >
-                      <span className="text-2xl">{loc.icon}</span>
-                      
-                      {/* Level Badge Pin */}
-                      <span className="absolute -top-2 -right-2 bg-slate-950 text-amber-300 border border-amber-500 text-[9px] font-mono px-1 rounded font-bold">
-                        Lv.{loc.levelNumber}
-                      </span>
-                    </button>
-
-                    {/* Tooltip Label */}
-                    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 bg-slate-950/90 border border-amber-500/80 text-amber-200 text-[10px] font-sans px-2 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none z-30 shadow-xl">
-                      {loc.name} ({questionCount} Soal)
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Character & AI Buddy Center Sprite Area */}
-            <div className="relative z-10 flex items-center justify-center py-10 space-x-6">
-              <div className="text-center group cursor-pointer" onClick={onOpenStudentSetup}>
-                <div className="text-6xl drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)] animate-pulse">
-                  {student.avatar}
-                </div>
-                <div className="mt-2 bg-slate-950/90 border border-amber-500/80 px-2 py-0.5 rounded text-[10px] font-bold text-amber-300 shadow">
-                  {student.name}
-                </div>
-              </div>
-
-              {/* Pet Slime / Helper */}
-              <div className="text-3xl animate-bounce">
-                💧
-              </div>
-            </div>
-
-            {/* AI Buddy Chat Tooltip Box */}
-            <div className="relative z-10 bg-slate-950/95 border-2 border-amber-600/80 p-3 rounded-xl shadow-xl flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-600 to-blue-800 border border-cyan-400 rounded-lg flex items-center justify-center text-xl shrink-0 shadow">
-                🤖
-              </div>
-              <div className="flex-1 font-sans">
-                <div className="text-xs font-bold text-cyan-300 flex items-center gap-1">
-                  <span>AI Buddy</span>
-                  <span className="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-700 px-1 rounded">Asisten RPG</span>
-                </div>
-                <p className="text-xs text-slate-200 mt-0.5 leading-snug">
-                  Hai <strong>{student.name}</strong>! Klik lokasi level pada peta di atas untuk memulai kuis. Setiap lokasi adalah level baru! 💪
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Action Hotbar (1-7) */}
-            <div className="relative z-10 flex items-center justify-center gap-1.5 pt-3 border-t border-amber-800/60">
-              {[
-                { num: '1', name: 'Buku', icon: '📖', action: () => onSelectLocation(currentLoc) },
-                { num: '2', name: 'Kuis', icon: '💡', action: () => onSelectLocation(currentLoc) },
-                { num: '3', name: 'Laptop AI', icon: '💻', action: onOpenTeacherAuth },
-                { num: '4', name: 'Siswa', icon: '👨‍🎓', action: onOpenLeaderboard },
-                { num: '5', name: 'Inventori', icon: '🎒', action: onOpenInventory },
-                { num: '6', name: 'Quest', icon: '📜', action: () => {} },
-                { num: '7', name: 'Opsi', icon: '⚙️', action: onOpenDbModal },
-              ].map((item) => (
-                <button
-                  key={item.num}
-                  onClick={() => {
-                    soundFx.playClick();
-                    item.action();
-                  }}
-                  className="w-10 h-11 bg-slate-950/90 border border-amber-600/60 hover:border-amber-300 rounded-lg flex flex-col items-center justify-between p-1 transition transform hover:-translate-y-1 cursor-pointer text-slate-200 group"
-                  title={item.name}
-                >
-                  <span className="text-sm">{item.icon}</span>
-                  <span className="text-[9px] font-mono text-amber-400 font-bold">{item.num}</span>
-                </button>
-              ))}
-            </div>
-
-          </div>
-
-          {/* Right Column (3 cols): Main Menu ("MENU UTAMA") */}
-          <div className="md:col-span-3 space-y-3">
-            <div className="bg-slate-900/90 border-2 border-amber-700/80 rounded-xl p-3 shadow-lg">
-              <div className="text-xs font-extrabold text-amber-300 mb-2 border-b border-amber-800 pb-1.5 flex items-center justify-between uppercase">
+            {/* Quick Navigation Menu */}
+            <div className="bg-slate-900/90 border-2 border-amber-700/80 rounded-2xl p-3 shadow-lg">
+              <div className="text-xs font-extrabold text-amber-300 mb-2 border-b border-amber-800 pb-1.5 flex items-center justify-between font-silkscreen uppercase">
                 <span>MENU UTAMA</span>
-                <span className="text-[10px] text-slate-400 font-normal">Game RPG</span>
+                <span className="text-[10px] text-amber-400 font-mono">RPG</span>
               </div>
 
-              <div className="space-y-1.5 text-xs font-sans">
-                
-                {/* Inventori */}
+              <div className="space-y-1.5 text-xs font-pixelify">
                 <button
                   onClick={() => {
                     soundFx.playClick();
                     onOpenInventory();
                   }}
-                  className="w-full text-left p-2 rounded-lg bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
+                  className="w-full text-left p-2 rounded-xl bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
                     <Backpack className="w-4 h-4 text-amber-400" />
-                    Inventori
+                    Inventori & Senjata
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                 </button>
 
-                {/* Skill */}
-                <button
-                  onClick={() => {
-                    soundFx.playClick();
-                    onOpenInventory();
-                  }}
-                  className="w-full text-left p-2 rounded-lg bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
-                    Skill & Lencana
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                </button>
-
-                {/* Siswa / Leaderboard */}
                 <button
                   onClick={() => {
                     soundFx.playClick();
                     onOpenLeaderboard();
                   }}
-                  className="w-full text-left p-2 rounded-lg bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
+                  className="w-full text-left p-2 rounded-xl bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-emerald-400" />
@@ -398,13 +262,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                   <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                 </button>
 
-                {/* Database Settings */}
                 <button
                   onClick={() => {
                     soundFx.playClick();
                     onOpenDbModal();
                   }}
-                  className="w-full text-left p-2 rounded-lg bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
+                  className="w-full text-left p-2 rounded-xl bg-slate-950/80 hover:bg-amber-950/60 border border-slate-800 hover:border-amber-600 text-amber-200 font-bold transition flex items-center justify-between cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
                     <Settings className="w-4 h-4 text-purple-400" />
@@ -413,23 +276,229 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                   <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                 </button>
 
-                {/* Mode Guru */}
                 <button
                   onClick={() => {
                     soundFx.playClick();
                     onOpenTeacherAuth();
                   }}
-                  className="w-full text-left p-2 rounded-lg bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 border border-purple-500/80 text-purple-200 font-bold transition flex items-center justify-between cursor-pointer shadow mt-2"
+                  className="w-full text-left p-2 rounded-xl bg-gradient-to-r from-purple-950 via-indigo-950 to-purple-950 hover:from-purple-900 hover:to-indigo-900 border-2 border-purple-500/80 text-purple-200 font-bold transition flex items-center justify-between cursor-pointer shadow mt-2"
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 font-silkscreen uppercase text-[11px]">
                     <Laptop className="w-4 h-4 text-amber-300" />
                     Mode Guru (bajuri39)
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
                 </button>
-
               </div>
             </div>
+
+            {/* Pak Guru Quote */}
+            <div className="bg-slate-900/90 border border-amber-800/80 p-2.5 rounded-xl text-center shadow-lg">
+              <p className="text-xs text-amber-200 italic">
+                "Ilmu adalah petualangan tanpa akhir."
+              </p>
+              <span className="text-[10px] text-amber-400 font-silkscreen block mt-0.5">
+                — Pak GuruAI
+              </span>
+            </div>
+
+          </div>
+
+          {/* Right Column (9 cols): EXPANDED WIDE RPG PLAYGROUND CANVAS MAP */}
+          <div className="lg:col-span-9 bg-slate-900 border-4 border-amber-700/80 rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between min-h-[480px] sm:min-h-[520px] shadow-2xl bg-gradient-to-b from-amber-950/30 via-emerald-950/30 to-slate-950">
+            
+            {/* Pixel Grid Pattern */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px]" />
+
+            {/* Connecting Path SVG Lines between all 6 level pins */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+              <defs>
+                <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
+                  <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0.9" />
+                </linearGradient>
+              </defs>
+
+              {/* Draw connected polyline between all 6 level pins */}
+              <polyline
+                points={sortedLocations.map(l => `${l.mapX}%,${l.mapY}%`).join(' ')}
+                fill="none"
+                stroke="url(#pathGradient)"
+                strokeWidth="4"
+                strokeDasharray="8 6"
+                className="animate-pulse"
+              />
+            </svg>
+
+            {/* Interactive Location Pins Overlay */}
+            <div className="absolute inset-0 p-4">
+              {sortedLocations.map((loc, idx) => {
+                const isCurrent = loc.id === student.currentLocationId;
+                const isCompleted = student.completedLocations.includes(loc.id);
+                const questionCount = questions.filter((q) => q.locationId === loc.id).length;
+
+                // Alternate animation styles & staggered delays for alive game-like feel
+                const animStyle = isCurrent
+                  ? 'animate-pixel-float animate-pin-glow'
+                  : isCompleted
+                  ? 'animate-pixel-bob'
+                  : loc.isUnlocked
+                  ? 'animate-pixel-float'
+                  : '';
+
+                return (
+                  <div
+                    key={loc.id}
+                    style={{ 
+                      left: `${loc.mapX}%`, 
+                      top: `${loc.mapY}%`,
+                      animationDelay: `${idx * 0.4}s`
+                    }}
+                    className={`absolute -translate-x-1/2 -translate-y-1/2 group z-20 ${animStyle}`}
+                  >
+                    {/* Floor Shadow Pulse */}
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-2 bg-black/60 rounded-full blur-[1px] pointer-events-none animate-shadow-pulse" />
+
+                    <button
+                      onClick={() => {
+                        soundFx.playTravel();
+                        onSelectLocation(loc);
+                      }}
+                      className={`relative p-3 rounded-2xl border-4 shadow-2xl transition transform hover:scale-125 cursor-pointer flex flex-col items-center justify-center ${
+                        isCurrent
+                          ? 'bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600 text-slate-950 border-amber-100 ring-4 ring-amber-400/80'
+                          : isCompleted
+                          ? 'bg-gradient-to-b from-emerald-800 to-emerald-950 text-emerald-200 border-emerald-400'
+                          : loc.isUnlocked
+                          ? 'bg-slate-900/95 text-amber-300 border-amber-500 hover:bg-amber-950 hover:border-amber-300'
+                          : 'bg-slate-950/95 text-slate-500 border-slate-800 opacity-60'
+                      }`}
+                    >
+                      <span className="text-3xl sm:text-4xl drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)] transition-transform group-hover:scale-110">
+                        {loc.icon}
+                      </span>
+
+                      {/* Level Badge Header */}
+                      <span className={`absolute -top-3 -right-2 px-1.5 py-0.5 rounded-md border text-[10px] font-silkscreen font-bold shadow ${
+                        isCompleted
+                          ? 'bg-emerald-400 text-slate-950 border-emerald-200'
+                          : isCurrent
+                          ? 'bg-slate-950 text-amber-300 border-amber-300'
+                          : 'bg-slate-950 text-slate-300 border-slate-700'
+                      }`}>
+                        Lv.{loc.levelNumber}
+                      </span>
+
+                      {/* Status Icon Indicator */}
+                      {isCompleted ? (
+                        <span className="absolute -bottom-2 bg-emerald-500 text-slate-950 p-0.5 rounded-full border border-emerald-200 shadow">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        </span>
+                      ) : !loc.isUnlocked ? (
+                        <span className="absolute -bottom-2 bg-slate-950 text-slate-400 p-0.5 rounded-full border border-slate-700">
+                          <Lock className="w-3.5 h-3.5" />
+                        </span>
+                      ) : null}
+                    </button>
+
+                    {/* Permanent Pixel Location Tag */}
+                    <div className="mt-2 bg-slate-950/90 border-2 border-amber-500/80 px-2 py-0.5 rounded-lg text-[10px] font-silkscreen text-amber-300 shadow-xl whitespace-nowrap text-center transform group-hover:scale-105 transition">
+                      {loc.name}
+                      <span className="text-amber-400/80 block text-[9px] font-mono font-normal">
+                        ({questionCount} Soal)
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Center RPG Character Sprite & Mascot Display */}
+            <div className="relative z-10 flex items-center justify-between px-6 pt-6">
+              
+              {/* Player Character Avatar Card */}
+              <div className="bg-slate-950/90 border-2 border-amber-500/80 p-3 rounded-2xl flex items-center gap-3 shadow-xl hover:border-amber-300 transition cursor-pointer group" onClick={onOpenStudentSetup}>
+                <div className="relative">
+                  <div className="w-14 h-14 bg-slate-900 border-2 border-amber-400 rounded-xl flex items-center justify-center text-4xl shadow-inner animate-pixel-float">
+                    {student.avatar}
+                  </div>
+                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-black/60 rounded-full blur-[1px] animate-shadow-pulse" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-amber-300 font-silkscreen uppercase group-hover:text-amber-200">
+                    {student.name}
+                  </h3>
+                  <p className="text-xs text-slate-300">
+                    Posisi: <strong className="text-emerald-400">{currentLoc.name}</strong>
+                  </p>
+                  <span className="text-[10px] text-amber-400 font-mono">Klik untuk ganti karakter pixel!</span>
+                </div>
+              </div>
+
+              {/* World Boss Preview Badge */}
+              <div className="bg-slate-950/90 border-2 border-red-600/80 p-3 rounded-2xl text-right shadow-xl hidden sm:block">
+                <div className="text-[10px] text-red-400 font-silkscreen uppercase">
+                  Puncak RPG (Level 6)
+                </div>
+                <h4 className="text-sm font-bold text-red-300 font-silkscreen">
+                  ⚡ Menara Malas
+                </h4>
+                <p className="text-xs text-slate-400">
+                  Bos: <span className="text-red-400 font-bold">Raja Kebodohan</span>
+                </p>
+              </div>
+
+            </div>
+
+            {/* AI Buddy Chat Box Footer Overlay */}
+            <div className="relative z-10 mt-auto pt-4">
+              <div className="bg-slate-950/95 border-2 border-amber-600/80 p-3.5 rounded-2xl shadow-2xl flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-blue-900 border-2 border-cyan-400 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-lg animate-pulse">
+                  🤖
+                </div>
+                <div className="flex-1 font-pixelify">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-cyan-300 font-silkscreen uppercase flex items-center gap-1.5">
+                      <span>AI Buddy Assistant</span>
+                      <span className="text-[9px] bg-cyan-950 text-cyan-300 border border-cyan-700 px-1.5 py-0.5 rounded font-mono">RPG Bot</span>
+                    </span>
+                    <span className="text-[10px] text-amber-400 font-mono">Map Area Terbuka Leluasa</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-200 mt-1 leading-relaxed">
+                    Halo <strong>{student.name}</strong>! Peta bermain kini lebih lebar! Klik ikon lokasi level (1-6) di peta untuk menjawab soal kuis dari Pak Guru dan menaikkan level RPG Anda. 🚀
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Action Hotbar Buttons (1-7) */}
+              <div className="flex items-center justify-center gap-2 pt-3">
+                {[
+                  { num: '1', name: 'Desa Ilmu', icon: '🏠', action: () => onSelectLocation(locations[0]) },
+                  { num: '2', name: 'Hutan Kreatif', icon: '🌲', action: () => onSelectLocation(locations[1]) },
+                  { num: '3', name: 'Pelabuhan', icon: '⛵', action: () => onSelectLocation(locations[2]) },
+                  { num: '4', name: 'Akademi', icon: '🏰', action: () => onSelectLocation(locations[3]) },
+                  { num: '5', name: 'Gunung', icon: '🏔️', action: () => onSelectLocation(locations[4]) },
+                  { num: '6', name: 'Menara Malas', icon: '⚡', action: () => onSelectLocation(locations[5]) },
+                  { num: '7', name: 'Mode Guru', icon: '💻', action: onOpenTeacherAuth },
+                ].map((item) => (
+                  <button
+                    key={item.num}
+                    onClick={() => {
+                      soundFx.playClick();
+                      item.action();
+                    }}
+                    className="h-12 bg-slate-950/95 border-2 border-amber-600/70 hover:border-amber-300 rounded-xl flex flex-col items-center justify-center px-2 py-1 transition transform hover:-translate-y-1 cursor-pointer text-slate-200 shadow group"
+                    title={item.name}
+                  >
+                    <span className="text-base">{item.icon}</span>
+                    <span className="text-[9px] font-silkscreen text-amber-400 font-bold">{item.num}. {item.name}</span>
+                  </button>
+                ))}
+              </div>
+
+            </div>
+
           </div>
 
         </div>
@@ -438,3 +507,4 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     </div>
   );
 };
+
